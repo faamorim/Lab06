@@ -7,6 +7,7 @@
 #include <limits>
 #include "dictionary.hpp"
 #include "stringhelper.hpp"
+int createCount = 0;
 void Dictionary::printFileState(string s1, bool printfile, string s2) const {
     if(!printFileStates)
         return;
@@ -31,12 +32,7 @@ bool Dictionary::load(){
     }
     else {
         printFileState("Opened file to load.");
-        string curLine;
-        string curWord;
-        string curDef;
-        unsigned long long int sepIndex;
-        unsigned long long int defIndex;
-        while(add(file, false));
+        while(add(file));
         printFileState("Closing file after load.");
         file.close();
         if(file.is_open()) {
@@ -51,7 +47,7 @@ bool Dictionary::load(){
 }
 
 Dictionary::~Dictionary(){
-    save();
+    //save();
 }
 
 bool Dictionary::save() const {
@@ -80,10 +76,8 @@ bool Dictionary::save() const {
     }
     return true;
 }
+
 bool Dictionary::add(istream& stream){
-    return add(stream, true);
-}
-bool Dictionary::add(istream& stream, bool newline){
     string curLine;
     string curWord;
     string curDef;
@@ -91,7 +85,7 @@ bool Dictionary::add(istream& stream, bool newline){
     unsigned long long int defIndex;
     stringstream newlinestr;
     newlinestr<<endl;
-    newline = newline || wordDefFileSeparator == "\n" || wordDefFileSeparator == newlinestr.str();
+    bool newline = wordDefFileSeparator == "\n" || wordDefFileSeparator == newlinestr.str();
     if(getline(stream, curLine)){
         curWord = "";
         curDef = "";
@@ -118,8 +112,8 @@ bool Dictionary::add(istream& stream, bool newline){
     return false;
 }
 bool Dictionary::add(string wrd, string def) {
-    string curWord = trim(wrd);
-    string curDef = trim(def);
+    string curWord = prepareWordForDictionary(move(wrd));
+    string curDef = trim(move(def));
     if(curWord.length() == 0 || curDef.length() == 0){
         return false;
     }
@@ -133,14 +127,15 @@ void Dictionary::setMargin(int size){
     leftMargin = getMarginString(size);
 }
 
-void Dictionary::printAll() const{
-    cout << (*this);
+void Dictionary::printAll(ostream& output) const{
+    output << (*this);
 }
 
 string Dictionary::getDefinition(string word) const{
+    word = prepareWordForDictionary(word);
     auto itr = dict.find(word);
-    if(itr == dict.end() || itr->second == ""){
-        return nullptr;
+    if(itr == dict.end() || itr->second.empty()){
+        return "";
     }
     return getWordDisplay(itr->first, itr->second);
 }
@@ -160,13 +155,18 @@ ostream& operator<<(ostream& os, const Dictionary& dictionary) {
     return os;
 }
 
-string Dictionary::getWordDisplay(string wrd, string def) const {
+string Dictionary::getWordDisplay(const string& wrd, const string& def) const {
     return getWordDisplay(wrd, def, fixedWordWidth, leftMargin);
 }
 
-string Dictionary::getWordDisplay(string wrd, string def, bool fixedWordWidth, const string& leftMargin) const {
+string Dictionary::getWordDisplay(const string& wrd, const string& def, bool fixedWordWidth, const string& leftMargin) const {
     int wordWidth = fixedWordWidth ? largestWordLength : 0;
     stringstream str;
     str << formatWordAndDef(wordDefDisplayFmt, wrd, def, wordWidth, leftMargin);
     return str.str();
+}
+
+
+string prepareWordForDictionary(const string& word){
+    return toLower(trim(word));
 }

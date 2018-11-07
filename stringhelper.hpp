@@ -12,14 +12,14 @@
 using namespace std;
 
 string trimLeft(string str){
-    while(isspace(str.at(0))){
+    while(str.length() > 0 && isspace(str.at(0))){
         str = str.substr(1);
     }
     return str;
 }
 
 string trimRight(string str){
-    while(isspace(str.at(str.length()-1))){
+    while(str.length() > 0 && isspace(str.at(str.length()-1))){
         str = str.substr(0, str.length()-1);
     }
     return str;
@@ -31,6 +31,16 @@ string trim(string str){
     return str;
 }
 
+string toLower(string str){
+    stringstream strstr;
+    for(char c : str){
+        if(c >= 'A' && c<='Z'){
+            c += 'a' - 'A';
+        }
+        strstr << c;
+    }
+    return strstr.str();
+}
 
 string formatString(string fmt, const map<char, string>& codes, const string& leftMargin = ""){
     bool carryIndent = true;
@@ -73,7 +83,7 @@ string formatHeader(const string& fmt, const string& header, const string& leftM
     return formatString(fmt, fmtHdrCodes, leftMargin);
 }
 
-string formatWordAndDef(string fmt, const string& word, const string& def, int wordWidth = 0, const string& leftMargin = ""){
+string formatWordAndDef(const string& fmt, const string& word, const string& def, int wordWidth = 0, const string& leftMargin = ""){
     map<char, string> fmtWrdAndDefCodes;
     stringstream wrdstream;
     wrdstream << setw(wordWidth) << std::left << word;

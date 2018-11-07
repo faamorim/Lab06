@@ -7,12 +7,17 @@
 #include "dictionary.hpp"
 #include <functional>
 
-class Menu{
+class ConsoleMenu{
 private:
-    map<int, pair<string, function<void()>>> options;
+    map<int, pair<string, function<bool()>>> options;
+    map<int, pair<string, function<bool()>>>::iterator pick;
+protected:
+    istream& input = cin;
+    ostream& output = cout;
 public:
-    Menu(){}
-
+    ConsoleMenu(istream& in, ostream& out) : input(in), output(out) {};
+    void start();
+    bool addOption(int code, pair<string, function<bool()>> option);
 };
 
 #endif //LAB06_MENU_HPP

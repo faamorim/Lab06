@@ -1,4 +1,6 @@
 a-><-b
-mais uma palavra-><-mais um significado. xD
-outra palavra-><-outro significado
-palavra-><-significado
+another word-><-another description
+b-><-b
+c-><-c
+one more word-><-one more description
+word-><-description

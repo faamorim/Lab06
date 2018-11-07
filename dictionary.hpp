@@ -14,7 +14,7 @@ class Dictionary {
 private:
     bool printFileStates;
     string const wordDefFileSeparator = "-><-";
-    string wordDefDisplayFmt = "This word: %w%n%t%tDefinition: %d";
+    string wordDefDisplayFmt = "%w - %d";
     string headerDisplayFmt = "----- %h -----";
     string fileName;
     map<string, string> dict;
@@ -22,9 +22,8 @@ private:
     bool printHeaders = true;
     string leftMargin;
     bool fixedWordWidth = false;
-    bool add(istream& stream, bool newline);
-    string getWordDisplay(string wrd, string def) const;
-    string getWordDisplay(string wrd, string def, bool fixedWordWidth, const string& leftMargin) const;
+    string getWordDisplay(const string& wrd, const string& def) const;
+    string getWordDisplay(const string& wrd, const string& def, bool fixedWordWidth, const string& leftMargin) const;
 public:
     void setMargin(int size);
     explicit Dictionary(string filename, bool print = false);
@@ -35,9 +34,10 @@ public:
     bool add(string wrd, string def);
     void printFileState(string s1, bool printfile = false, string s2 = "") const;
     friend ostream& operator<<(ostream& os, const Dictionary& mat);
-    void printAll() const;
+    void printAll(ostream& output = cout) const;
     string getDefinition(string word) const;
 };
 
+string prepareWordForDictionary(const string& word);
 
 #endif //LAB06_DICTIONARY_HPP
